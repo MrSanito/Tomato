@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import jwt, { Jwt, JwtPayload } from "jsonwebtoken";
 import User, { Iuser } from "../model/User.model.js";
 import TryCatch from "./tryCatch.js";
+import { redis_v1 } from "googleapis";
 
 export interface AuthenticatedRequest extends Request {
   user?: Iuser | null;
@@ -14,7 +15,7 @@ export const isAuth = async (
 ): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer")) {
+     if (!authHeader || !authHeader.startsWith("Bearer")) {
       res.status(401).json({
         success: false,
         message: "please Login - No Auth Header",
@@ -58,8 +59,9 @@ const allowedRoles = ["customer", "rider", "seller"] as const;
 
 type Role = (typeof allowedRoles)[number];
 export const addUserRole = TryCatch(async (req: AuthenticatedRequest, res) => {
+  console.log(req.user)
   if (!req.user?._id) {
-    res.status(401).json({
+    return res.status(401).json({
       success: false,
       message: "Unauthorized ",
     });
@@ -67,7 +69,7 @@ export const addUserRole = TryCatch(async (req: AuthenticatedRequest, res) => {
   const { role } = req.body as { role: Role };
 
   if (!allowedRoles.includes(role)) {
-    res.status(400).json({
+    return res.status(400).json({
       success: false,
       message: "Invalid Role",
     });
@@ -79,7 +81,7 @@ export const addUserRole = TryCatch(async (req: AuthenticatedRequest, res) => {
   );
 
   if (!user) {
-    res.status(404).json({
+    return res.status(404).json({
       success: false,
       message: "user not found ",
     });
