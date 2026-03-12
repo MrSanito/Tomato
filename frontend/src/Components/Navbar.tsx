@@ -6,7 +6,7 @@ import { DiVim } from "react-icons/di";
 import { BiMapPin, BiSearch } from "react-icons/bi";
 
 export const Navbar = () => {
-  const { isAuth } = useAppData();
+  const { isAuth, city   } = useAppData();
   const currentLocation = useLocation();
   const isHomePage = currentLocation.pathname === "/";
 
@@ -60,7 +60,10 @@ export const Navbar = () => {
           <div className="mx-auto  max-w-7xl items-center rounded-lg border shadow-sm ">
             <div className="flex items-center gap-2 px-3 border-r text-gray-700">
               <BiMapPin className="h-4 w-4 text-[#E23744]" />
-              <span className="text-sm truncate max-w-32">city</span>
+              <span className="text-sm truncate max-w-32">
+                {" "}
+                {city || "Detecting location..."}
+              </span>
               <div className="flex items-center flex-1 gap-2 px-3">
                 <BiSearch className="h-4 w-4 text-gray-400" />
                 <input
