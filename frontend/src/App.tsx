@@ -7,8 +7,17 @@ import ProtectedRoutes from "./Components/protectedRoutes";
 import SelectRole from "./pages/SelectRole";
 import { Navbar } from "./Components/Navbar";
 import Account from "./pages/Account";
+import { useAppData } from "./context/AppContext";
+import Restaurant from "./pages/Restaurant";
 
 function App() {
+
+  const {user}= useAppData()
+  console.log(user)
+
+  if(user && user.role === "seller") {
+    return <Restaurant/>
+  }
   return (
     <>
       <BrowserRouter>
@@ -20,6 +29,7 @@ function App() {
           <Route element={<ProtectedRoutes />}>
           <Route path="/" element={<Home />} />
           <Route path="/select-role" element={<SelectRole />} />
+          <Route path="/account" element={<Account />} />
           <Route path="/account" element={<Account />} />
           </Route>
         </Routes>

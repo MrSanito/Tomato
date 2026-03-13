@@ -1,14 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { Jwt, JwtPayload } from "jsonwebtoken";
 
-export interface Iuser  {
-    _id: string
+export interface Iuser {
+  _id: string;
   name: string;
   email: string;
   image: string;
   role: string;
+  restaurantId: string;
 }
-   export interface AuthenticatedRequest extends Request {
+export interface AuthenticatedRequest extends Request {
   user?: Iuser | null;
 }
 
@@ -57,4 +58,23 @@ export const isAuth = async (
       message: "Please Login  = Jwt Error",
     });
   }
+};
+
+export const isSeller = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+
+  const user = req.user
+
+  if(user && user.role === "seller") {
+    res.status(401).json({
+      success: false, 
+      message: "you are not authorized seller"
+    })
+    return
+  }
+
+  next()
 };
