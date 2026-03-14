@@ -6,6 +6,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AppProvider } from "./context/AppContext.tsx";
 
 export const authService = import.meta.env.VITE_AUTH_SERVICE;
+export const restaurantService = import.meta.env.VITE_RESTAURANT_SERVICE;
 console.log(authService)
 
 createRoot(document.getElementById("root")!).render(

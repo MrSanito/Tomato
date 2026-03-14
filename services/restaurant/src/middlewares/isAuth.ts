@@ -20,8 +20,8 @@ export const isAuth = async (
 ): Promise<void> => {
   try {
     const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer")) {
-      res.status(401).json({
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+       res.status(401).json({
         success: false,
         message: "please Login - No Auth Header",
       });
@@ -68,7 +68,7 @@ export const isSeller = async (
 
   const user = req.user
 
-  if(user && user.role === "seller") {
+  if(!user || user.role !== "seller") {
     res.status(401).json({
       success: false, 
       message: "you are not authorized seller"

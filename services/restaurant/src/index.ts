@@ -1,14 +1,23 @@
-import express from "express";
+import express, { NextFunction } from "express";
+import { Request, Response } from "express";
 import connectDB from "./config/db.js";
 import dotenv from "dotenv";
-import restaurantRoutes from "./routes/index.js"
-
+import restaurantRoutes from "./routes/index.js";
+import cors from "cors";
 dotenv.config();
 
 const app = express();
+app.use(cors());
+app.use(express.json())
+
+app.use((req:Request, res: Response, next: NextFunction) => {
+  console.log(`${req.method} ${req.url}`);
+
+  next();
+});
 
 const PORT = process.env.PORT;
-app.use("/api/v1", r  estaurantRoutes)
+app.use("/api/v1", restaurantRoutes);
 
 app.listen(PORT, async () => {
   try {

@@ -4,7 +4,7 @@ import TryCatch from "../middlewares/tryCatch.js";
 import Restaurant from "../models/Restaurant.js";
 import getBuffer from "../config/datauri.js";
 import axios from "axios";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
 export const addRestaurant = TryCatch(
   async (req: AuthenticatedRequest, res: Response) => {
@@ -56,58 +56,71 @@ export const addRestaurant = TryCatch(
 
     const { data: uploadResult } = await axios.post(
       `${process.env.UTILS_SERVICE}/api/v1/upload`,
-      {buffer: fileBuffer.content, }
+      { buffer: fileBuffer.content },
     );
 
     const restaurant = await Restaurant.create({
-        name, description, 
-        phone,  
-        image: uploadResult.url, 
-        ownerId: user._id, 
-        autoLocation: {
-            type: "Point", 
-            coordinates: [Number(longitude), Number(latitude)],
-            formattedAddress
-        }
-
-    })
+      name,
+      description,
+      phone,
+      image: uploadResult.url,
+      ownerId: user._id,
+      autoLocation: {
+        type: "Point",
+        coordinates: [Number(longitude), Number(latitude)],
+        formattedAddress,
+      },
+    });
 
     return res.status(201).json({
-        success: true, 
-        message: "REstaurant Created Successfully", 
-        restaurant
-    })
+      success: true,
+      message: "REstaurant Created Successfully",
+      restaurant,
+    });
+  },
+);
+
+export const fetchMyRestaurant = TryCatch(
+  async (req: AuthenticatedRequest, res: Response) => {
+    console.log("here it is ")
+    if (!req.user) {
+      
+      return res.status(401).json({
+        success: false,
+        message: "Please Login",
+      });
+    }
+
+    const restaurant = await Restaurant.findOne({ ownerId: req.user._id });
+    if (!restaurant) {
+      return res.json({
+        success: false,
+        message: "NO Restaurant Found",
+      });
+    }
+    if (!req.user.restaurantId) {
+      const token = jwt.sign(
+        {
+          user: {
+            ...req.user,
+            restaurantId: restaurant._id,
+          },
+        },
+        process.env.JWT_SEC as string,
+        {
+          expiresIn: "15",
+        },
+      );
+
+      return res.json({
+        success: true,
+       restaurant, token 
+      })
+    }
+
+    res.json({restaurant}) 
   },
 
 );
 
 
-export const fetchMyRestaurant = TryCatch(async (req:AuthenticatedRequest , res:Response) => {
-
-    if(!req.user) {
-        return res.status(401).json({
-            success: false, 
-            message: "Please Login"
-        })
-    }
-    
-    const restaurant = await Restaurant.findOne({ownerId: req.user._id})
-    if(!restaurant) {
-        return res.json({
-            success: false , 
-            message: "Invalid User"
-        })
-
-    }
-        if(!req.user.restaurantId) {
-
-const token = jwt.sign({
-    user: {
-        ...req.user, 
-        restaurantId : restaurant._id
-    }
-}, process.env.JWT_SEC as string, {
-    expiresIn: "15"
-})
-        }
-})
