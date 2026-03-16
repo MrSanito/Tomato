@@ -118,7 +118,7 @@ export const fetchMyRestaurant = TryCatch(
       })
     }
 
-    res.json({restaurant}) 
+    res.json({restaurant})  
   },
 
 );
