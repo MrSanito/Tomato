@@ -10,7 +10,7 @@ const AddRestaurant = () => {
   const [description, setDescription] = useState("");
   const [phone, setPhone] = useState("");
   const [image, setImage] = useState<File | null>(null);
-  const [submitting, setSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { loadingLocation, location } = useAppData();
 
@@ -31,7 +31,7 @@ const AddRestaurant = () => {
     formData.append("phone", phone);
 
     try {
-      setSubmitting(true);
+      setIsSubmitting(true);
       await axios.post(`${restaurantService}/restaurant/new`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -42,7 +42,7 @@ const AddRestaurant = () => {
     } catch (error: any) {
       toast.error(error.response.data.message);
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -83,15 +83,20 @@ const AddRestaurant = () => {
         </label>
 
         <div className="flex items-start gap-3 rounded-lg  border p-4">
-            <BiPin className="mt-0.5 h-5 w-5  text-red-500
-            "/>
+          <BiPin
+            className="mt-0.5 h-5 w-5  text-red-500
+            "
+          />
 
-            <div className="text-sm">
-                {loadingLocation ? "Fetching Your Location " : location?.formattedAddress || "Location Not Available"}
-            </div>
+          <div className="text-sm">
+            {loadingLocation
+              ? "Fetching Your Location "
+              : location?.formattedAddress || "Location Not Available"}
+          </div>
         </div>
 
-        <button className="w-full rounded-lg ">Submit
+        <button className="w-full rounded-lg " onClick={handleSubmit}>
+          {isSubmitting ? "Submitting ...." : "Submit"}
         </button>
       </div>
     </div>
